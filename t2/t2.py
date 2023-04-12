@@ -36,11 +36,6 @@ def trilha_maximal(r,adj,flag=True):
         adj[u][c].pop(0)
         colors.append(c)
         u = v
-        # v=adj[u][0][0]
-        # T.append(v)
-        # adj[v].pop(adj[v].index(adj[u][0][-1]))
-        # adj[u].pop(0)
-        # u = v
         flag=not flag
     
 
@@ -49,7 +44,7 @@ def trilha_euler(m,adj):
     while len(T) < m+1:
         for i,t in enumerate(T):
             c = C[i-1]
-            c = (c -1)*-1
+            
             if len(adj[t][c])>0:
                 v = t
                 b = i
@@ -57,7 +52,7 @@ def trilha_euler(m,adj):
         T_linha,c_linha= trilha_maximal(v,adj,c)
         T =T[:b]+T_linha[:-1]+T[b:]
         C = C[:b]+c_linha[:-1]+C[b:]
-   
+    #print(*C)
     return T
 
 
