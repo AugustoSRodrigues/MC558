@@ -1,36 +1,63 @@
 class grafo():
     def __init__(self,n) -> None:
-        self.adj = [[] for _ in range(n)]
+        self.adj = [[[],[]]for _ in range(n)]
+        self.arestas = [0,0]
 
     def add_node(self,u,v,c):
-       
-        self.adj[u].append([v,c,False])
-        self.adj[v].append([u,c,False])
-        self.adj[u][-1].append(self.adj[v][-1])
-        self.adj[v][-1].append(self.adj[u][-1])
+        self.adj[u][c].append(v)
+        self.adj[v][c].append(u)
+        # self.adj[u][c][-1].append(len(self.adj[v][c])-1)
+        # self.adj[v][c][-1].append(len(self.adj[u][c])-1)
+        self.arestas[c]+=1
 
-def trilha_maximal(r,adj):
+
+    def eh_euler_alter(self):
+        if self.arestas[0]%2 ==1 or self.arestas[1]%1==1:
+            return False
+        return True
+    
+
+
+    
+        
+
+def trilha_maximal(r,adj,flag=True):
     u = r
     T = []
+    colors = []
     T.append(u)
-    while len(adj[u])>0:
-        v=adj[u][0][0]
+    while True:
+        c = 0 if flag else 1
+        if len(adj[u][c])<=0:
+            return T,colors
+        v = adj[u][c][0]
         T.append(v)
-        adj[v].pop(adj[v].index(adj[u][0][-1]))
-        adj[u].pop(0)
+        adj[v][c].pop(adj[v][c].index(u))
+        adj[u][c].pop(0)
+        colors.append(c)
         u = v
-    return T
+        # v=adj[u][0][0]
+        # T.append(v)
+        # adj[v].pop(adj[v].index(adj[u][0][-1]))
+        # adj[u].pop(0)
+        # u = v
+        flag=not flag
+    
 
 def trilha_euler(m,adj):
-    T = trilha_maximal(0,adj)
+    T,C= trilha_maximal(0,adj)
     while len(T) < m+1:
         for i,t in enumerate(T):
-            if len(adj[t])>0:
+            c = C[i-1]
+            c = (c -1)*-1
+            if len(adj[t][c])>0:
                 v = t
                 b = i
                 break
-        T_linha = trilha_maximal(v,adj)
-        T =T[:b]+T_linha[:-1]+T[b:] 
+        T_linha,c_linha= trilha_maximal(v,adj,c)
+        T =T[:b]+T_linha[:-1]+T[b:]
+        C = C[:b]+c_linha[:-1]+C[b:]
+   
     return T
 
 
@@ -39,18 +66,28 @@ def main():
     n,m = map(int,input().split())
     graus = [0,0]
     G = grafo(n)
-    
+
     
     for _ in range(m):
         u,v,c = map(int,input().split())
         graus[c]+=1
         G.add_node(u,v,c)
     
-    
-    if graus[0]%2 ==1 or graus[1]%2==1:
+    if not G.eh_euler_alter():
         print("Não possui trilha Euleriana alternante")
     else:
         e = trilha_euler(m,G.adj)
         print(*e)
+        
+    
+    # T,colors= trilha_maximal(0,G.adj)
+    # print(*T)
+    # print(*colors)
+    # print(list(zip(T,colors)))
+    # if graus[0]%2 ==1 or graus[1]%2==1:
+    #     print("Não possui trilha Euleriana alternante")
+    # else:
+    # e = trilha_euler(m,G.adj)
+    # print(*e)
 
 main()
